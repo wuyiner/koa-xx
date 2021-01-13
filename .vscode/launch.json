@@ -1,0 +1,35 @@
+{
+  // 使用 IntelliSense 了解相关属性。 
+  // 悬停以查看现有属性的描述。
+  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "启动cmd.js",
+      "program": "${workspaceFolder}/cmd.js",
+      "request": "launch",
+      "type": "node",
+      "args": ["init"],
+      "console": "integratedTerminal",
+    },
+    {
+      "name": "启动index.js",
+      "program": "${workspaceFolder}/index.js",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "npm", // 或者 node-dev
+      "runtimeArgs": ["run-script","dev"],
+      "restart": true,
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "${workspaceRoot}/node_modules/**/*.js",
+        "<node_internals>/**/*.js"
+      ]
+    },
+    {
+      "name": "attach启动index.js",
+      "request": "attach",
+      "type": "node"
+    }
+  ]
+}
