@@ -6,7 +6,7 @@ const {
   find, findUserById, deleteUser, 
   create, updateUser, login, checkOwner, 
   listFollowing, follow, getCurrentUser,
-  unfollow, listFollower} = require('../controllers/users')
+  unfollow, listFollower, checkUserExist} = require('../controllers/users')
 const {secret} = require('../config')
 
 // 添加验证中间件
@@ -37,7 +37,7 @@ router.delete('/:id', auth,checkOwner,deleteUser)
 router.post('/login',login)
 router.get('/:id/following',auth,listFollowing)
 router.get('/:id/follower',listFollower)
-router.put('/following/:id', auth,follow )
-router.delete('/unfollowing/:id', auth, unfollow)
+router.put('/following/:id', auth, checkUserExist,follow )
+router.delete('/unfollowing/:id', auth,  checkUserExist,unfollow)
 
 module.exports = router 

@@ -3,12 +3,26 @@ const jsonwebtoken = require('jsonwebtoken')
 const {secret} = require('../config')
 class UserCtrl{
   async find(ctx){
-    ctx.body = await User.find()
+    const { per_page = 10} = ctx.query
+    const perPage = Math.max(per_page * 1, 1) 
+    const page = Math.max(ctx.query.page * 1, 1) - 1
+    ctx.body = await User.find().limit(perPage).skip(page * perPage)
   }
   async findUserById(ctx){
     const fields = ctx.query.fields || ''
     const selectFields = fields.split(";").filter(f => f).map(f => ` +${f}`).join('')
-    const user = await User.findById(ctx.params.id).select(selectFields)
+    const populateStr = fields.split(";").filter(f => f)
+      .map(f => {
+        if(f === 'employments'){
+          return 'employments.company employments.job'
+        } else if(f === 'educations') {
+          return 'educations.school educations.major'
+        } else {
+          return f
+        }
+      })
+      .join(' ')
+    const user = await User.findById(ctx.params.id).select(selectFields).populate(populateStr)
     
     if(!user) {
       ctx.throw(404,'用户不存在')
@@ -80,6 +94,13 @@ class UserCtrl{
     }
     ctx.body = user.following
   }
+  async checkUserExist(ctx, next){
+    const user = await User.findById(ctx.params.id)
+    if(!user){
+      ctx.throw(404, "用户不存在")
+    }
+    await next()
+  }
   async follow(ctx){
     const me = await User.findById(ctx.state.user._id).select('+following')
     if(!me.following.map(id => id.toString()).includes(ctx.params.id) && ctx.params.id !== ctx.state.user._id){
@@ -91,7 +112,7 @@ class UserCtrl{
   }
   async unfollow(ctx){
     const me = await User.findById(ctx.state.user._id).select('+following')
-    const formateFollowList = me.following.map(item => item.toString() && ctx.params.id !== ctx.state.user._id)
+    const formateFollowList = me.following.map(item => item.toString())
     const index = formateFollowList.indexOf(ctx.params.id)
     if(index > -1) {
       me.following.splice(index, 1)

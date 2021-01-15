@@ -1,3 +1,4 @@
 [0113/131851.325:ERROR:registration_protocol_win.cc(130)] TransactNamedPipe: 管道已结束。 (0x6D)
 [0113/131958.943:ERROR:registration_protocol_win.cc(130)] TransactNamedPipe: 管道已结束。 (0x6D)
 [0113/132330.759:ERROR:registration_protocol_win.cc(130)] TransactNamedPipe: 管道已结束。 (0x6D)
+[0113/132905.828:ERROR:registration_protocol_win.cc(130)] TransactNamedPipe: 管道已结束。 (0x6D)
