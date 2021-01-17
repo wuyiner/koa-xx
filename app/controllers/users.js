@@ -110,22 +110,46 @@ class UserCtrl{
     ctx.status = 204
     // if(!me.following.includes())
   }
+  async followTopic(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    const id = ctx.params.id
+    // 如果没有关注过这个话题
+    if(!me.followingTopics.map(topic => topic.toString()).includes(ctx.params.id)){
+      me.followingTopics.push(ctx.params.id)
+      me.save()
+    }
+    ctx.status = 204
+  }
   async unfollow(ctx){
     const me = await User.findById(ctx.state.user._id).select('+following')
     const formateFollowList = me.following.map(item => item.toString())
     const index = formateFollowList.indexOf(ctx.params.id)
     if(index > -1) {
       me.following.splice(index, 1)
-      console.log('11', me)
       me.save()
     }
     ctx.status = 204
+  }
+  async unfollowTopics(ctx){
+    const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    const index = me.followingTopics.map(topic => topic.toString()).indexOf(ctx.params.id)
+    if(index > -1){
+      me.followingTopics.splice(index, 1)
+      me.save()
+    }
+    ctx.status = 204
+
   }
   // 获取粉丝
   async listFollower(ctx){
     // 查找following是指定用户的用户
     const users = await User.find({following: ctx.params.id})
     ctx.body = users
+  }
+  async listFollowTopic(ctx){
+    const users = await User.findById(ctx.params.id).select('+followingTopics').populate('followingTopics')
+    if(!users){ctx.throw(404, '不存在该用户')}
+    ctx.body = users.followingTopics
   }
   async getCurrentUser(ctx){
     const me = await User.findById(ctx.state.user._id)

@@ -1,4 +1,5 @@
 const Topic = require('../models/topic')
+const User = require('../models/users')
 
 
 class TopicCtrl{
@@ -17,7 +18,7 @@ class TopicCtrl{
     }
   }
   async findById(ctx){
-    const {fields = ''} = ctx.query.fields 
+    const {fields = ''} = ctx.query 
     const selectFields = fields.split(";").filter(f => f).map(f => ` +${f}`).join('')
     const topic = await Topic.findById(ctx.params.id).select(selectFields)
     ctx.body = topic
@@ -39,6 +40,17 @@ class TopicCtrl{
     })
     const topic = await Topic.findByIdAndUpdate(ctx.params.id, ctx.request.body)
     ctx.body = topic
+  }
+  async checkTopicExist(ctx, next){
+    let topic = await Topic.findById(ctx.params.id)
+    if(!topic){
+      ctx.throw(404, "话题不存在")
+    }
+    await next()
+  }
+  async listTopicFollower(ctx){
+    let users = await User.find({followingTopics: ctx.params.id})
+    ctx.body = users
   }
 }
 module.exports = new TopicCtrl()

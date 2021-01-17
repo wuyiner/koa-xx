@@ -6,7 +6,9 @@ const {
   find, findUserById, deleteUser, 
   create, updateUser, login, checkOwner, 
   listFollowing, follow, getCurrentUser,
-  unfollow, listFollower, checkUserExist} = require('../controllers/users')
+  unfollow, listFollower, checkUserExist,
+  followTopic,unfollowTopics, listFollowTopic} = require('../controllers/users')
+const {checkTopicExist} =require('../controllers/topic')
 const {secret} = require('../config')
 
 // 添加验证中间件
@@ -35,9 +37,11 @@ router.get('/:id', findUserById)
 router.patch('/:id',auth,checkOwner,updateUser)
 router.delete('/:id', auth,checkOwner,deleteUser)
 router.post('/login',login)
-router.get('/:id/following',auth,listFollowing)
+router.get('/:id/following',listFollowing)
 router.get('/:id/follower',listFollower)
 router.put('/following/:id', auth, checkUserExist,follow )
 router.delete('/unfollowing/:id', auth,  checkUserExist,unfollow)
-
+router.put('/followingTopic/:id', auth, checkTopicExist,followTopic)
+router.delete('/unfollowingTopic/:id', auth, checkTopicExist,unfollowTopics)
+router.get('/:id/followingTopic', listFollowTopic)
 module.exports = router 
